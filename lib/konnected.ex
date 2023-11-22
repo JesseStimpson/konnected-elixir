@@ -15,4 +15,8 @@ defmodule Konnected do
   def hello do
     :world
   end
+
+  def sensors() do
+    Konnected.DeviceSupervisor.get_all_sensors()
+  end
 end

@@ -23,6 +23,10 @@ defmodule Konnected.DeviceServer do
     GenServer.call(pid, {:actuate, actuator_state}, :infinity)
   end
 
+  def get_sensors(pid) do
+    GenServer.call(pid, :get_sensors, :infinity)
+  end
+
   def get_actuators(pid) do
     GenServer.call(pid, :get_actuators, :infinity)
   end
@@ -54,8 +58,12 @@ defmodule Konnected.DeviceServer do
     {:reply, device_id, state}
   end
 
+  def handle_call(:get_sensors, _from, state=%{sensors: sensors}) do
+    {:reply, Map.values(sensors), state}
+  end
+
   def handle_call(:get_actuators, _from, state=%{actuators: actuators}) do
-    {:reply, actuators, state}
+    {:reply, Map.values(actuators), state}
   end
 
   def handle_call({:actuate, actuator_state=%ActuatorState{id: id}}, _from, state=%{api: api, actuators: actuators}) do

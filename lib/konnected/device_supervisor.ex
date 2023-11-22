@@ -15,8 +15,19 @@ defmodule Konnected.DeviceSupervisor do
     Konnected.DeviceServer.actuate(get_child!(device_id), actuator_state)
   end
 
+  def get_sensors!(device_id) do
+    Konnected.DeviceServer.get_sensors(get_child!(device_id))
+  end
+
   def get_actuators!(device_id) do
     Konnected.DeviceServer.get_actuators(get_child!(device_id))
+  end
+
+  def get_all_sensors() do
+    ll = (for {_, pid, _, _} <- DynamicSupervisor.which_children(__MODULE__) do
+      Konnected.DeviceServer.get_sensors(pid)
+      end)
+    List.flatten(ll)
   end
 
   def get_child!(device_id) do
