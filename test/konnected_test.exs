@@ -16,7 +16,7 @@ defmodule KonnectedTest do
     parser = Plug.Parsers.init(parsers: [:json], json_decoder: Jason)
 
     conn = conn(:put, "/device/deviceId", Jason.encode!(device_state_body))
-           |> put_req_header("authentication", "Bearer #{@token}")
+           |> put_req_header("authorization", "Bearer #{@token}")
            |> put_req_header("content-type", "application/json")
            |> Plug.Parsers.call(parser)
            |> Konnected.Plug.Device.call(device_plug)
@@ -28,7 +28,7 @@ defmodule KonnectedTest do
   test "Konnected.Plug.Device GET DENY" do
     device_plug = Konnected.Plug.Device.init(token: @token)
     conn = conn(:get, "/device/deviceId")
-           |> put_req_header("authentication", "Bearer wrongtoken")
+           |> put_req_header("authorization", "Bearer wrongtoken")
            |> put_req_header("accept", "application/json")
            |> Konnected.Plug.Device.call(device_plug)
     assert %Plug.Conn{status: 401} = conn
@@ -37,7 +37,7 @@ defmodule KonnectedTest do
   test "Konnected.Plug.Device GET" do
     device_plug = Konnected.Plug.Device.init(token: @token, device_supervisor: nil)
     conn = conn(:get, "/device/deviceId")
-           |> put_req_header("authentication", "Bearer #{@token}")
+           |> put_req_header("authorization", "Bearer #{@token}")
            |> put_req_header("accept", "application/json")
            |> Konnected.Plug.Device.call(device_plug)
     assert %Plug.Conn{status: 200} = conn

@@ -68,7 +68,7 @@ defmodule Konnected.Plug.Device do
 
   defp check_authentication(%Plug.Conn{req_headers: req_headers}, init_data), do: check_authentication(req_headers, init_data)
   defp check_authentication([], _), do: false
-  defp check_authentication([{"authentication", "Bearer " <> test_token}|_], %{token: real_token}), do: test_token == real_token
+  defp check_authentication([{"authorization", "Bearer " <> test_token}|_], %{token: real_token}), do: test_token == real_token
   defp check_authentication([_h|t], init_data), do: check_authentication(t, init_data)
 
   # /.../device/:id/..." must be in path
