@@ -35,8 +35,7 @@ defmodule Konnected.Application do
   defp endpoint(endpoint_config) do
     host = case endpoint_config[:host] do
       :auto ->
-        {:ok, ifs} = :inet.getif()
-        [{addr, _, _}|_] = Enum.filter(ifs, fn {{192, 168, _, _}, _, _} -> true; _ -> false end)
+        {:ok, addr} = get_addr_auto(100)
         addr
           |> Tuple.to_list()
           |> Enum.map(&Integer.to_string/1)
@@ -47,4 +46,20 @@ defmodule Konnected.Application do
     port = Keyword.get(endpoint_config, :port, 80)
     "http://#{host}:#{port}#{endpoint_config[:path]}"
   end
+
+  defp get_addr_auto(sleep) when sleep > 20000 do
+    {:error, :timeout}
+  end
+  defp get_addr_auto(sleep) do
+    {:ok, ifs} = :inet.getif()
+    case Enum.filter(ifs, fn {{192, 168, _, _}, _, _} -> true; _ -> false end) do
+      [{addr, _, _}|_] ->
+        {:ok, addr}
+      [] ->
+        Logger.info("Unable to find addr among #{inspect(ifs)}. Sleeping #{sleep}...")
+        :timer.sleep(sleep)
+        get_addr_auto(sleep*2)
+    end
+  end
+
 end
