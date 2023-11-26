@@ -1,6 +1,11 @@
 import Config
 config :konnected, Konnected,
   token: "authentication-bearer-token",
+  endpoint: [
+    host: :auto,
+    port: 5001,
+    path: "/api/konnected"
+  ],
   devices: [
     [
       device_id: "807d3a3e097b",
@@ -8,7 +13,6 @@ config :konnected, Konnected,
       port: 12065,
       sensors: [1,2,3,4,5,6],
       actuators: [out: 1],
-      endpoint: "http://192.168.1.233:5001/api/konnected",
       pwd: nil,
       notify: fn events -> IO.puts("#{inspect(events)}") end
     ],
@@ -18,7 +22,6 @@ config :konnected, Konnected,
       port: 16350,
       sensors: [1,2,3,4],
       actuators: [],
-      endpoint: "http://192.168.1.233:5001/api/konnected",
       pwd: nil,
       notify: fn events -> IO.puts("#{inspect(events)}") end
     ]

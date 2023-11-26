@@ -30,6 +30,12 @@ defmodule Konnected.DeviceSupervisor do
     List.flatten(ll)
   end
 
+  def dump() do
+    (for {_, pid, _, _} <- DynamicSupervisor.which_children(__MODULE__) do
+      :sys.get_state(pid)
+      end)
+  end
+
   def get_child!(device_id) do
     case get_child(DynamicSupervisor.which_children(__MODULE__), device_id) do
       pid when is_pid(pid) ->

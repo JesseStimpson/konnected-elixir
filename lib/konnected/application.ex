@@ -26,8 +26,25 @@ defmodule Konnected.Application do
 
   def start_config() do
     config = Application.fetch_env!(:konnected, Konnected)
+    endpoint_config = Keyword.get(config, :endpoint, [])
     devices = Keyword.get(config, :devices, [])
-    for device <- devices, do: Konnected.DeviceSupervisor.start_child(device ++ [token: config[:token]])
+    for device <- devices, do: Konnected.DeviceSupervisor.start_child(device ++ [token: config[:token], endpoint: endpoint(endpoint_config)])
     :ignore
+  end
+
+  defp endpoint(endpoint_config) do
+    host = case endpoint_config[:host] do
+      :auto ->
+        {:ok, ifs} = :inet.getif()
+        [{addr, _, _}|_] = Enum.filter(ifs, fn {{192, 168, _, _}, _, _} -> true; _ -> false end)
+        addr
+          |> Tuple.to_list()
+          |> Enum.map(&Integer.to_string/1)
+          |> Enum.join(".")
+      h ->
+        h
+    end
+    port = Keyword.get(endpoint_config, :port, 80)
+    "http://#{host}:#{port}#{endpoint_config[:path]}"
   end
 end
