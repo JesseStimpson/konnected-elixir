@@ -97,6 +97,7 @@ defmodule Konnected.DeviceServer do
       err ->
           Logger.error(Exception.format(:error, err, __STACKTRACE__))
           GenServer.cast(self(), :make_ready)
+          {:noreply, state}
     end
   end
   def handle_cast({:update_sensor, sensor_state=%SensorState{id: id}}, state=%{sensors: sensors, notify: notify}) do
